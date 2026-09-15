@@ -2,7 +2,9 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - cursor/build-finance-data-room-5a91
   workflow_dispatch:
 
 permissions:
