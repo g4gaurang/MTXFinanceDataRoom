@@ -14,8 +14,11 @@ Production checks:
 ```bash
 npm run lint
 npm run build
+npm run qa
 npm run preview
 ```
+
+`npm run qa` expects the local Vite server at `http://127.0.0.1:5173/MTXFinanceDataRoom/`. It checks desktop, tablet, and mobile layouts; keyboard modal behavior; selected interactions; console errors; and serious or critical automated accessibility findings. Set `QA_URL` to test another local URL.
 
 ## Technical foundation
 

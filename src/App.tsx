@@ -1,12 +1,12 @@
 import {
-  Activity, AlertTriangle, ArrowRight, BarChart3, BookOpen, Bot, Check, CheckCircle2,
-  ChevronDown, ChevronRight, CircleUserRound, Clock3, Database, Download, Eye,
-  FileCheck2, FileLock2, FileSearch, FileText, Filter, Folder, FolderOpen, History,
+  Activity, AlertTriangle, ArrowRight, BookOpen, Bot, Check, CheckCircle2,
+  ChevronRight, CircleUserRound, Clock3, Database, Eye,
+  FileCheck2, FileLock2, FileText, Filter, Folder, FolderOpen, History,
   KeyRound, Layers3, Link2, LockKeyhole, Menu, MessageSquareText, Network, PanelLeft,
-  Plus, Search, Send, Settings2, ShieldCheck, Sparkles, Upload, UserRoundCheck, Users,
+  Plus, Search, Send, Settings2, ShieldCheck, Sparkles, UserRoundCheck, Users,
   WandSparkles, X,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { architecture, capabilities, challenges, journey, requests as initialRequests, roles, transactions, useCases } from './data'
 
@@ -271,16 +271,15 @@ function Workspace() {
   const data = transactions[tx]
   const docs = data.documents.filter(d => d[0].toLowerCase().includes(search.toLowerCase()) && (workstream === 'Any' || d[1] === workstream))
   const document = docs[selected] ?? docs[0]
-  useEffect(() => setSelected(0), [tx, search, workstream])
   return <section id="workspace" className="section workspace-section"><div className="container wide">
     <SectionIntro eyebrow="Interactive workspace" title="Explore the transaction, not just the file list." copy="Switch transactions, navigate folders, search documents, inspect access, and submit a fictional question." />
     <DemoLabel>Fictional transaction data shown for demonstration purposes.</DemoLabel>
     <div className="workspace-shell">
       <div className="workspace-topbar">
-        <div className="tx-switcher"><small>Transaction</small><select aria-label="Select fictional transaction" value={tx} onChange={e => { setTx(e.target.value as keyof typeof transactions); setFolder(0) }}>{txKeys.map(k => <option key={k}>{k}</option>)}</select></div>
+        <div className="tx-switcher"><small>Transaction</small><select aria-label="Select fictional transaction" value={tx} onChange={e => { setTx(e.target.value as keyof typeof transactions); setFolder(0); setSelected(0) }}>{txKeys.map(k => <option key={k}>{k}</option>)}</select></div>
         <Label tone="blue">{data.phase}</Label>
-        <div className="workspace-search"><Search size={17} /><input aria-label="Search fictional documents" placeholder="Search documents" value={search} onChange={e => setSearch(e.target.value)} /></div>
-        <select aria-label="Filter by workstream" value={workstream} onChange={e => setWorkstream(e.target.value)}><option>Any</option><option>Corporate</option><option>Financial</option><option>Legal</option><option>Technology</option><option>Programs</option></select>
+        <div className="workspace-search"><Search size={17} /><input aria-label="Search fictional documents" placeholder="Search documents" value={search} onChange={e => { setSearch(e.target.value); setSelected(0) }} /></div>
+        <select aria-label="Filter by workstream" value={workstream} onChange={e => { setWorkstream(e.target.value); setSelected(0) }}><option>Any</option><option>Corporate</option><option>Financial</option><option>Legal</option><option>Technology</option><option>Programs</option></select>
       </div>
       <div className="workspace-body">
         <aside className="doc-tree" aria-label="Document folders">
@@ -349,12 +348,11 @@ function RequestTracker() {
   const shown = rows.filter(r => filter === 'Any' || r.workstream === filter)
   const item = shown[selected] ?? shown[0]
   const update = (field: 'owner' | 'status', value: string) => setRows(rows.map(r => r.id === item.id ? { ...r, [field]: value } : r))
-  useEffect(() => setSelected(0), [filter])
   return <section className="section"><div className="container wide">
     <SectionIntro eyebrow="Diligence request tracker" title="Keep requests, evidence, ownership, and release status connected." />
     <DemoLabel />
     <div className="tracker-shell">
-      <div className="tracker-tools"><div><Filter size={17} /> Workstream <select value={filter} onChange={e => setFilter(e.target.value)}><option>Any</option><option>Financial</option><option>Legal</option><option>Corporate</option><option>Technology</option></select></div><Button variant="secondary"><Plus size={16} /> New request</Button></div>
+      <div className="tracker-tools"><div><Filter size={17} /> Workstream <select aria-label="Filter requests by workstream" value={filter} onChange={e => { setFilter(e.target.value); setSelected(0) }}><option>Any</option><option>Financial</option><option>Legal</option><option>Corporate</option><option>Technology</option></select></div><Button variant="secondary"><Plus size={16} /> New request</Button></div>
       <div className="tracker-content">
         <div className="request-table">
           <div className="request-head"><span>Request</span><span>Workstream</span><span>Owner</span><span>Due</span><span>Status</span></div>
@@ -385,7 +383,7 @@ function QAWorkflow() {
       <div className="qa-grid">
         <div className="external-card"><Label tone="blue">External question</Label><h3>Is there a current version of the material contract register?</h3><p>Submitted by Buyer or Investor Group · Related to Material contract register.pdf</p><div className="published-preview"><Eye /> External view includes the question and released response only.</div></div>
         <div className="internal-card"><div className="internal-header"><LockKeyhole /> Internal work area <Label>Hidden from external users</Label></div><label>Assigned responder<select><option>Legal lead</option><option>Finance lead</option></select></label><label>Draft response<textarea defaultValue="A current placeholder register is available for authorized review. Supporting items remain subject to release approval." /></label><div className="internal-thread"><strong>Internal discussion</strong><p>Confirm release scope and selected supporting documents before approval.</p></div></div>
-        <div className="release-card"><Label tone={step >= 4 ? 'good' : 'warning'}>{step >= 4 ? 'Approved' : 'Review pending'}</Label><h3>Release control</h3><label>Release response to<select value={audience} onChange={e => setAudience(e.target.value)}><option>Requesting participant only</option><option>Selected participant groups</option><option>Authorized external participants</option></select></label><p>Current audience: <strong>{audience}</strong></p><Button onClick={() => setStep(s => Math.min(s + 1, 5))} disabled={undefined}>{step < 4 ? 'Advance human review' : step === 4 ? 'Release approved response' : 'Response released'} <ArrowRight size={16} /></Button></div>
+        <div className="release-card"><Label tone={step >= 4 ? 'good' : 'warning'}>{step >= 4 ? 'Approved' : 'Review pending'}</Label><h3>Release control</h3><label>Release response to<select value={audience} onChange={e => setAudience(e.target.value)}><option>Requesting participant only</option><option>Selected participant groups</option><option>Authorized external participants</option></select></label><p>Current audience: <strong>{audience}</strong></p><Button onClick={() => setStep(s => Math.min(s + 1, 5))}>{step < 4 ? 'Advance human review' : step === 4 ? 'Release approved response' : 'Response released'} <ArrowRight size={16} /></Button></div>
       </div>
     </div>
   </div></section>
@@ -450,7 +448,7 @@ function ActivityCenter() {
   return <section className="section pale"><div className="container">
     <SectionIntro eyebrow="Activity and security center" title="Review participant and administrative events in context." copy="Ordinary activity is not characterized as harmful without supporting evidence." />
     <div className="activity-shell">
-      <div className="activity-filters"><Filter /> <select value={filter} onChange={e => setFilter(e.target.value)}><option>Any activity</option>{events.map(e => <option key={e[0]}>{e[0]}</option>)}</select><select aria-label="Participant filter"><option>Any participant</option><option>External reviewer</option><option>Room administrator</option></select><select aria-label="Date filter"><option>Last 7 days</option><option>Today</option><option>Last 30 days</option></select></div>
+      <div className="activity-filters"><Filter /> <select aria-label="Activity type filter" value={filter} onChange={e => setFilter(e.target.value)}><option>Any activity</option>{events.map(e => <option key={e[0]}>{e[0]}</option>)}</select><select aria-label="Participant filter"><option>Any participant</option><option>External reviewer</option><option>Room administrator</option></select><select aria-label="Date filter"><option>Last 7 days</option><option>Today</option><option>Last 30 days</option></select></div>
       <div className="activity-list">{visible.map(([event, actor, status, time]) => <div key={event}><span className="event-icon">{status === 'Access denied' ? <AlertTriangle /> : <Activity />}</span><span><strong>{event}</strong><small>{actor}</small></span><Label tone={status === 'Expected activity' ? 'good' : status === 'Review recommended' ? 'warning' : 'neutral'}>{status}</Label><time>{time}</time></div>)}</div>
     </div>
   </div></section>
